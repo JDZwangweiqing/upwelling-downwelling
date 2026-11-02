@@ -37,13 +37,32 @@
   .seg { display: flex; border: 1px solid #c3d0da; border-radius: 8px; overflow: hidden; }
   .seg button { border: none; border-radius: 0; }
 
-  /* 两种洋流切换按键 */
-  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  /* ---- 左侧竖排控制面板 ---- */
+  .layout { display: flex; gap: 14px; align-items: stretch; }   /* 面板高度强制与右列底边对齐 */
+  .panel {
+    flex: 0 0 218px; width: 218px;
+    display: flex; flex-direction: column; gap: 12px;
+    background: #fff; border-radius: 14px; padding: 12px 11px 14px;
+    box-shadow: 0 3px 14px rgba(11,61,92,.10);
+  }
+  .ptitle { font-size: 12px; color: #8496a3; letter-spacing: 2px; margin: 0 2px 5px; }
+  .pgroup { display: flex; flex-direction: column; gap: 6px; }
+  .pgroup + .pgroup { border-top: 1px dashed #e2e9ef; padding-top: 11px; }
+  .pgroup button { width: 100%; text-align: center; }
+  .seg.v { flex-direction: column; border-radius: 8px; }
+  .seg.v button + button { border-top: 1px solid #d5e0e9; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .grid2 button { width: 100%; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .grid3 button { width: 100%; padding: 7px 4px; }
+
+  /* 两种洋流切换按键(竖排在面板顶部) */
+  .tabs { display: grid; grid-template-columns: 1fr; gap: 8px; }
   .tab {
-    display: flex; flex-direction: column; gap: 4px; align-items: flex-start;
-    padding: 12px 18px; border-radius: 11px; border: 1px solid #c3d0da; background: #fff;
-    cursor: pointer; text-align: left; font-family: inherit; font-size: 17px; font-weight: 700;
-    color: #22475c; transition: .18s; box-shadow: 0 1px 5px rgba(11,61,92,.06);
+    display: flex; flex-direction: column; gap: 3px; align-items: flex-start;
+    padding: 10px 12px; border-radius: 10px; border: 1px solid #c3d0da; background: #fff;
+    cursor: pointer; text-align: left; font-family: inherit; font-size: 15px; font-weight: 700;
+    color: #22475c; transition: .18s;
   }
   .tab b { font-weight: 700; letter-spacing: .3px; }
   .tab span { font-size: 12.8px; font-weight: 400; color: #6b7c8a; line-height: 1.5; }
@@ -53,7 +72,13 @@
     color: #fff; box-shadow: 0 5px 16px rgba(13,107,181,.30);
   }
   .tab.on span { color: rgba(255,255,255,.86); }
-  @media (max-width: 700px) { .tabs { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+    .panel { position: static; width: 100%; flex: none; flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+    .panel .tabs { flex: 1 1 100%; display: grid; grid-template-columns: 1fr 1fr; }
+    .pgroup { flex: 1 1 160px; }
+    .pgroup + .pgroup { border-top: none; padding-top: 0; }
+  }
 
   #stage { display: grid; grid-template-columns: repeat(auto-fit, minmax(430px, 1fr)); gap: 16px; }
   .card { background: #fff; border-radius: 14px; box-shadow: 0 3px 14px rgba(11,61,92,.10); overflow: hidden; }
@@ -75,15 +100,25 @@
     position: absolute; right: 12px; top: 12px; width: 66px; height: 66px;
     pointer-events: none; filter: drop-shadow(0 1px 5px rgba(0,0,0,.25));
   }
-  .info { padding: 12px 16px 14px; }
-  .info .lead { font-size: 13.5px; color: #35485a; margin-bottom: 6px; }
-  ol.steps { font-size: 13px; line-height: 1.7; color: #455a6a; padding-left: 19px; }
+  .info { padding: 12px 16px 14px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); column-gap: 16px; align-items: start; }
+  .info .colL, .info .colR { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .info .colR { border-left: 3px solid #d8e4ee; padding-left: 28px; }   /* 右移 2 字符 */
+  .info .lead { font-size: 13.5px; color: #35485a; margin-bottom: 0; }
+  .info .note { font-size: 12px; color: #7b8c99; line-height: 1.75; }
+  .info .note b { color: #56718a; }
+  ol.steps { font-size: 13px; line-height: 1.7; color: #455a6a; padding-left: 19px; margin: 0; }
   ol.steps b { color: #0b3d5c; }
-  .legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 10px; font-size: 12.5px; color: #5b7180; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 14px; font-size: 12.5px; color: #5b7180; }
   .legend i { width: 13px; height: 13px; border-radius: 3px; display: inline-block; margin-right: 5px; vertical-align: -1px; }
+  @media (max-width: 900px) {
+    .info { display: block; }
+    .info .colL, .info .colR { display: block; }
+    .info .colR { border-left: none; padding-left: 0; margin-top: 10px; }
+    .info .lead { margin-bottom: 6px; }
+    .info .note { margin: 8px 0; }
+  }
   body[data-view="up"] #cardDown { display: none; }
   body[data-view="down"] #cardUp { display: none; }
-  .foot { margin-top: 14px; font-size: 12.5px; color: #7b8c99; line-height: 1.7; }
 </style>
 </head>
 <body data-view="up">
@@ -91,49 +126,53 @@
   <header>
     <div>
       <h1>海洋上升流与下降流的形成原理(3D 动态演示)</h1>
-      <div class="sub">北半球:表层海水净输移(埃克曼输运)偏向风向<b>右侧 90°</b>;南半球偏向<b>左侧 90°</b>——同样沿岸风,两半球会得到相反的上升/下降结果,可用上方"半球"按键切换对比。<br>➜ 鼠标<b>左键拖拽旋转</b>、<b>滚轮缩放</b>、<b>右键拖拽平移</b>,可从任意角度观察三维结构。</div>
     </div>
   </header>
 
-  <div class="tabs">
-    <button class="tab on" data-v="up"><b>a. 上升流 (Upwelling)</b><span>表层水离岸 → 深层冷水上升补偿 → 渔场</span></button>
-    <button class="tab" data-v="down"><b>b. 下降流 (Downwelling)</b><span>表层水向岸 → 近岸堆积下沉 → 低生产力</span></button>
-  </div>
-
-  <div class="bar">
-    <div class="grp">
-      <span class="lbl">半球</span>
-      <div class="seg">
-        <button data-hemi="N" class="on">北半球</button>
-        <button data-hemi="S">南半球</button>
+  <div class="layout">
+    <aside class="panel">
+      <div class="pgroup">
+        <div class="tabs">
+          <button class="tab on" data-v="up"><b>a. 上升流</b><span>表层水离岸 → 深层冷水上升 → 渔场</span></button>
+          <button class="tab" data-v="down"><b>b. 下降流</b><span>表层水向岸 → 近岸堆积下沉</span></button>
+        </div>
       </div>
-    </div>
-    <div class="sep"></div>
-    <div class="grp">
-      <button id="btnPlay" class="primary">⏸ 暂停</button>
-      <button data-spd="0.5">0.5×</button>
-      <button data-spd="1" class="on">1×</button>
-      <button data-spd="2">2×</button>
-    </div>
-    <div class="sep"></div>
-    <div class="grp">
-      <span class="lbl">视角</span>
-      <button data-preset="default" class="on">默认</button>
-      <button data-preset="top">俯视</button>
-      <button data-preset="front">断面</button>
-      <button data-preset="along">沿岸</button>
-      <button id="btnSpin">自动旋转</button>
-      <button id="btnReset">复位视角</button>
-    </div>
-    <div class="sep"></div>
-    <div class="grp">
-      <button id="btnLabel" class="on">标注</button>
-      <button id="btnPart" class="on">颗粒</button>
-      <button id="btnLink" class="on">视角同步</button>
-    </div>
-  </div>
+      <div class="pgroup">
+        <div class="ptitle">半球</div>
+        <div class="seg v">
+          <button data-hemi="N" class="on">北半球</button>
+          <button data-hemi="S">南半球</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="ptitle">播放</div>
+        <button id="btnPlay" class="primary">⏸ 暂停</button>
+        <div class="grid3">
+          <button data-spd="0.5">0.5×</button>
+          <button data-spd="1" class="on">1×</button>
+          <button data-spd="2">2×</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="ptitle">视角</div>
+        <div class="grid2">
+          <button data-preset="default" class="on">默认</button>
+          <button data-preset="top">俯视</button>
+          <button data-preset="front">断面</button>
+          <button data-preset="along">沿岸</button>
+        </div>
+        <button id="btnReset">复位视角</button>
+      </div>
+      <div class="pgroup">
+        <div class="ptitle">图层</div>
+        <button id="btnLabel" class="on">标注</button>
+        <button id="btnPart" class="on">颗粒</button>
+        <button id="btnLink" class="on">视角同步</button>
+      </div>
+    </aside>
 
-  <div id="stage">
+    <div class="main">
+    <div id="stage">
     <div class="card" id="cardUp">
       <div class="cvbox" id="boxUp">
         <canvas id="cvUp"></canvas>
@@ -150,21 +189,26 @@
         <div class="tip">左键拖拽旋转 · 滚轮缩放 · 右键平移</div>
       </div>
       <div class="info">
-        <div class="lead">表层水被送离海岸 → 近岸"亏空" → 深层冷水携营养盐上升补偿。</div>
-        <ol class="steps">
-          <li><b>① 沿岸风</b>平行于海岸吹(吹向北)。</li>
-          <li><b>② 埃克曼输运</b>:科里奥利力使表层海水净输移偏向风向右侧 90° → 表层水<b>离岸</b>外流。</li>
-          <li><b>③ 上升补偿</b>:近岸表层水流失,深层冷而富含营养盐的海水<b>上升</b>补充,温跃层近岸抬升。</li>
-          <li><b>④ 高生产力</b>:营养盐带到真光层 → 浮游植物大量繁殖 → 形成秘鲁、索马里、加利福尼亚等著名上升流渔场。</li>
-        </ol>
-        <div class="legend">
-          <span><i style="background:#e53935"></i>沿岸风</span>
-          <span><i style="background:#ffb300"></i>表层埃克曼输运</span>
-          <span><i style="background:#4aa3ff"></i>上升流</span>
-          <span><i style="background:#4dd0e1"></i>表层冷水外流</span>
-          <span><i style="background:#3f7fc1"></i>深层补偿流</span>
-          <span><i style="background:#ffd54f"></i>营养盐</span>
-          <span><i style="background:#9ccc65"></i>浮游植物</span>
+        <div class="colL">
+          <div class="lead">表层水被送离海岸 → 近岸"亏空" → 深层冷水携营养盐上升补偿。</div>
+          <div class="note">说明:模型按大陆西岸(陆地在西、外海在东)构建,图中 <b>+X 为向东(离岸)</b>、<b>−Z 为向北(沿岸)</b>;画面右上角的<b>罗盘</b>红色指针始终指向北方,旋转视角时会实时跟随。北半球岸外上升流对应沿岸风由南向北吹、下降流对应由北向南吹;切换到南半球后,同样的上升流需要风由北向南吹——插图中风向与偏转方向标注会自动更新。</div>
+        </div>
+        <div class="colR">
+          <ol class="steps">
+            <li><b>① 沿岸风</b><span id="windUp">平行于海岸吹(吹向北)</span>。</li>
+            <li><b>② 埃克曼输运</b>:科里奥利力使表层海水净输移<span id="ekmanUp">偏向风向右侧 90°</span> → 表层水<b>离岸</b>外流。</li>
+            <li><b>③ 上升补偿</b>:近岸表层水流失,深层冷而富含营养盐的海水<b>上升</b>补充,温跃层近岸抬升。</li>
+            <li><b>④ 高生产力</b>:营养盐带到真光层 → 浮游植物大量繁殖 → 形成秘鲁、索马里、加利福尼亚等著名上升流渔场。</li>
+          </ol>
+          <div class="legend">
+            <span><i style="background:#e53935"></i>沿岸风</span>
+            <span><i style="background:#ffb300"></i>表层埃克曼输运</span>
+            <span><i style="background:#4aa3ff"></i>上升流</span>
+            <span><i style="background:#4dd0e1"></i>表层冷水外流</span>
+            <span><i style="background:#3f7fc1"></i>深层补偿流</span>
+            <span><i style="background:#ffd54f"></i>营养盐</span>
+            <span><i style="background:#9ccc65"></i>浮游植物</span>
+          </div>
         </div>
       </div>
     </div>
@@ -185,25 +229,31 @@
         <div class="tip">左键拖拽旋转 · 滚轮缩放 · 右键平移</div>
       </div>
       <div class="info">
-        <div class="lead">表层水被送往海岸 → 近岸水位抬升堆积 → 被迫下沉。</div>
-        <ol class="steps">
-          <li><b>① 沿岸风</b>方向相反(吹向南),埃克曼输运随之反向。</li>
-          <li><b>② 埃克曼输运</b>:表层海水净输移偏向风向右侧 90° → 表层水<b>向岸</b>输送。</li>
-          <li><b>③ 堆积下沉</b>:近岸水位抬升,海水被迫<b>下沉</b>,温跃层近岸下倾。</li>
-          <li><b>④ 低生产力</b>:表层富氧水被输往深层,而深层营养盐难以回到真光层,浮游生物稀少、渔获较差。</li>
-        </ol>
-        <div class="legend">
-          <span><i style="background:#e53935"></i>沿岸风</span>
-          <span><i style="background:#ffb300"></i>表层埃克曼输运</span>
-          <span><i style="background:#e8443f"></i>下沉流</span>
-          <span><i style="background:#3f7fc1"></i>深层回流</span>
-          <span><i style="background:#ffc9c9"></i>下沉水团</span>
+        <div class="colL">
+          <div class="lead">表层水被送往海岸 → 近岸水位抬升堆积 → 被迫下沉。</div>
+          <div class="note">说明:模型按大陆西岸(陆地在西、外海在东)构建,图中 <b>+X 为向东(离岸)</b>、<b>−Z 为向北(沿岸)</b>;画面右上角的<b>罗盘</b>红色指针始终指向北方,旋转视角时会实时跟随。北半球岸外上升流对应沿岸风由南向北吹、下降流对应由北向南吹;切换到南半球后,同样的上升流需要风由北向南吹——插图中风向与偏转方向标注会自动更新。</div>
+        </div>
+        <div class="colR">
+          <ol class="steps">
+            <li><b>① 沿岸风</b><span id="windDown">方向相反(吹向南)</span>,埃克曼输运随之反向。</li>
+            <li><b>② 埃克曼输运</b>:表层海水净输移<span id="ekmanDown">偏向风向右侧 90°</span> → 表层水<b>向岸</b>输送。</li>
+            <li><b>③ 堆积下沉</b>:近岸水位抬升,海水被迫<b>下沉</b>,温跃层近岸下倾。</li>
+            <li><b>④ 低生产力</b>:表层富氧水被输往深层,而深层营养盐难以回到真光层,浮游生物稀少、渔获较差。</li>
+          </ol>
+          <div class="legend">
+            <span><i style="background:#e53935"></i>沿岸风</span>
+            <span><i style="background:#ffb300"></i>表层埃克曼输运</span>
+            <span><i style="background:#e8443f"></i>下沉流</span>
+            <span><i style="background:#3f7fc1"></i>深层回流</span>
+            <span><i style="background:#ffc9c9"></i>下沉水团</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="foot">说明:模型按大陆西岸(陆地在西、外海在东)构建,图中 <b>+X 为向东(离岸)</b>、<b>−Z 为向北(沿岸)</b>;画面右上角的<b>罗盘</b>红色指针始终指向北方,旋转视角时会实时跟随。北半球岸外上升流对应沿岸风由南向北吹、下降流对应由北向南吹;切换到南半球后,同样的上升流需要风由北向南吹——插图中风向与偏转方向标注会自动更新。</div>
+    </div><!-- /.main -->
+  </div><!-- /.layout -->
 </div>
 
 <script>/**
@@ -247,12 +297,18 @@ function fbm(x, z) {
   return s;
 }
 function terrainH(x, z) {
-  const w = smoothstep(-3, 3, x);
-  const land = -0.17 * x + 0.6;          // 平缓的沿海低地(取代高山)
+  const w = smoothstep(-5, 5, x);        // 更宽缓的岸线过渡 → 海滩更宽
+  const land = -0.14 * x + 0.6;          // 平缓的沿海低地
   const sea = -0.30 * x - 0.95;
   let h = land * (1 - w) + sea * w;
   const n = fbm(x, z);
-  h += n * ((1 - w) * 0.42 + w * 0.40);  // 陆地起伏大幅减小
+  h += n * ((1 - w) * 0.85 + w * 0.40);  // 陆地噪声起伏增强
+  // 内陆丘陵:几座平缓山丘,模拟真实陆地起伏(仅陆侧,不影响海底断面)
+  h += (1 - w) * (
+    6.5 * Math.exp(-(Math.pow((x + 20) / 13, 2) + Math.pow((z + 9) / 10, 2))) +
+    8.5 * Math.exp(-(Math.pow((x + 33) / 14, 2) + Math.pow((z - 11) / 12, 2))) +
+    4.5 * Math.exp(-(Math.pow((x + 12) / 8, 2) + Math.pow((z - 18) / 7, 2)))
+  );
   // 近岸海底峡谷:让断面水体足够深,上升流柱清晰可见
   h -= Math.exp(-Math.pow((x - 9) / 7, 2)) * 7.5 * w;
   h -= smoothstep(44, 66, x) * 6.5;      // 远端深海
@@ -267,13 +323,13 @@ const C_HIGH = C(0x9a8c72), C_SAND = C(0xdccb9e), C_WET = C(0xb3a077);
 const C_BED = C(0x5d6f55), C_DEEPBED = C(0x27394a);
 function terrainColor(y, steep, x, z) {
   let c;
-  if (y > 0.9) {
-    const t = smoothstep(0.9, 16, y);
+  if (y > 1.8) {
+    const t = smoothstep(1.8, 16, y);
     c = C_GRASS_D.clone().lerp(C_GRASS_L, 0.4 + 0.35 * Math.sin(x * 0.19 + z * 0.15)).lerp(C_HIGH, t * 0.42);
-  } else if (y > -0.7) {
-    c = C_SAND.clone().lerp(C_WET, smoothstep(0.9, -0.7, y));
+  } else if (y > -1.2) {
+    c = C_SAND.clone().lerp(C_WET, smoothstep(1.8, -1.2, y));   // 加宽的沙滩带
   } else {
-    c = C_WET.clone().lerp(C_BED, smoothstep(-0.7, -7, y)).lerp(C_DEEPBED, smoothstep(-9, -26, y));
+    c = C_WET.clone().lerp(C_BED, smoothstep(-1.2, -7, y)).lerp(C_DEEPBED, smoothstep(-9, -26, y));
   }
   c.lerp(C_ROCK, steep * 0.8);
   return c;
@@ -459,7 +515,7 @@ function makeLabel(text, o) {
 }
 
 // ---------------- 天空 ----------------
-const SKY_TOP = C(0x4f96cf), SKY_MID = C(0x9cc9e6), SKY_BOT = C(0xdfe9ee);
+const SKY_TOP = C(0xffffff), SKY_MID = C(0xfdfefe), SKY_BOT = C(0xf2f7fb);   // 3D 视图背景:白色
 const SUN_DIR = new T3.Vector3(0.46, 0.72, 0.52).normalize();
 function makeSky() {
   const mat = new T3.ShaderMaterial({
@@ -474,7 +530,7 @@ function makeSky() {
       ' col = mix(col, uTop, smoothstep(0.05, 0.62, h));',
       ' float sun = pow(max(dot(normalize(vD), uSun), 0.0), 220.0);',
       ' float glow = pow(max(dot(normalize(vD), uSun), 0.0), 8.0) * 0.28;',
-      ' col += vec3(1.0, 0.94, 0.82) * (sun * 1.6 + glow);',
+      ' col += vec3(1.0, 0.94, 0.82) * (sun * 1.6 + glow) * 0.0;',   // 白底:不画太阳光斑
       ' gl_FragColor = vec4(col, 1.0);',
       '}'
     ].join('\n')
@@ -486,22 +542,28 @@ function makeSky() {
 
 // ---------------- 海面 ----------------
 function makeSeaSurface() {
-  const geo = new T3.PlaneGeometry(80, 50, 150, 96);
+  const geo = new T3.PlaneGeometry(75, 50, 150, 100);
   geo.rotateX(-Math.PI / 2);
+  /* 逐顶点记录海底/滩面高度:岸线附近把水面压到地形之下,消除穿插重影 */
+  const pos0 = geo.attributes.position;
+  const bedArr = new Float32Array(pos0.count);
+  for (let i = 0; i < pos0.count; i++) bedArr[i] = terrainH(pos0.getX(i) + 27.5, pos0.getZ(i));
+  geo.setAttribute('aBed', new T3.Float32BufferAttribute(bedArr, 1));
   const u = {
     uTime: { value: 0 },
-    uOrigin: { value: 30.0 },
+    uOrigin: { value: 27.5 },
     uSun: { value: SUN_DIR },
     uAmp: { value: 1.0 },
     uShallow: { value: C(0x3fb6bd) },
     uDeep: { value: C(0x0a3a63) },
-    uSky: { value: C(0xa9d3e8) },
+    uSky: { value: C(0xd9e9f5) },
     uFoam: { value: C(0xf2fbfd) }
   };
   const mat = new T3.ShaderMaterial({
     uniforms: u, transparent: true, side: T3.DoubleSide,
     vertexShader: [
       'uniform float uTime; uniform float uOrigin; uniform float uAmp;',
+      'attribute float aBed;',
       'varying vec3 vW; varying vec3 vN; varying float vH; varying float vX; varying float vZ;',
       'void main(){',
       ' vec3 p = position;',
@@ -518,7 +580,9 @@ function makeSeaSurface() {
       ' float sh = smoothstep(-7.0, 9.0, wx);',
       ' h *= mix(0.30, 1.0, sh); g *= mix(0.30, 1.0, sh);',
       ' h *= uAmp; g *= uAmp;',
-      ' p.y += h;',
+      ' float bed = aBed;',
+      ' float shore = smoothstep(-0.55, -0.05, bed);',
+      ' p.y += mix(h, min(h, bed - 0.08), shore);',   // 岸线一带压到滩面之下,杜绝闪烁重影
       ' vH = h; vX = wx; vZ = wz;',
       ' vN = normalize(vec3(-g.x, 1.0, -g.y));',
       ' vec4 wp = modelMatrix * vec4(p, 1.0); vW = wp.xyz;',
@@ -551,7 +615,7 @@ function makeSeaSurface() {
     ].join('\n')
   });
   const m = new T3.Mesh(geo, mat);
-  m.position.set(30, 0, 0);
+  m.position.set(27.5, 0, 0);
   m.renderOrder = 2;
   return { mesh: m, uniforms: u };
 }
@@ -559,10 +623,11 @@ function makeSeaSurface() {
 // ---------------- 水体侧壁(前/后/右) ----------------
 function waterWall(pts, topFn) {
   // pts: [[x,z], ...] 顺序相邻构成折线; topFn(x,z) 返回该处水面高度(=0)
-  const positions = [], uvs = [], indices = [];
+  const positions = [], uvs = [], indices = [], beds = [];
   for (let i = 0; i < pts.length; i++) {
     const x = pts[i][0], z = pts[i][1];
     const yb = terrainH(x, z) - 0.4;
+    beds.push(terrainH(x, z));
     positions.push(x, yb, z); // 0 底
     uvs.push(i / (pts.length - 1), 0);
     positions.push(x, 0.0, z); // 1 顶
@@ -575,12 +640,40 @@ function waterWall(pts, topFn) {
   const geo = new T3.BufferGeometry();
   geo.setAttribute('position', new T3.Float32BufferAttribute(positions, 3));
   geo.setAttribute('uv', new T3.Float32BufferAttribute(uvs, 2));
+  geo.setAttribute('aBed', new T3.Float32BufferAttribute(beds, 1));
   geo.setIndex(indices);
   geo.computeVertexNormals();
   const mat = new T3.ShaderMaterial({
     side: T3.DoubleSide, transparent: true,
     uniforms: { uShallow: { value: C(0x2f97a6) }, uDeep: { value: C(0x07324f) }, uTime: { value: 0 } },
-    vertexShader: 'varying vec2 vUv; varying vec3 vW; void main(){ vUv = uv; vec4 wp = modelMatrix * vec4(position,1.0); vW = wp.xyz; gl_Position = projectionMatrix * viewMatrix * wp; }',
+    vertexShader: [
+      'uniform float uTime;',
+      'attribute float aBed;',
+      'varying vec2 vUv; varying vec3 vW;',
+      'float waveH(vec2 q){',
+      '  float h = 0.0;',
+      '  vec2 d1 = normalize(vec2(0.84, 0.54)); float f1 = 0.26, a1 = 0.46, s1 = 1.02;',
+      '  float ph1 = dot(q, d1) * f1 + uTime * s1; h += sin(ph1) * a1;',
+      '  vec2 d2 = normalize(vec2(0.62, -0.78)); float f2 = 0.45, a2 = 0.26, s2 = 1.55;',
+      '  float ph2 = dot(q, d2) * f2 + uTime * s2; h += sin(ph2) * a2;',
+      '  vec2 d3 = normalize(vec2(0.94, 0.34)); float f3 = 0.86, a3 = 0.13, s3 = 2.35;',
+      '  float ph3 = dot(q, d3) * f3 - uTime * s3; h += sin(ph3) * a3;',
+      '  vec2 d4 = normalize(vec2(0.50, 0.87)); float f4 = 1.55, a4 = 0.06, s4 = 3.20;',
+      '  float ph4 = dot(q, d4) * f4 + uTime * s4; h += sin(ph4) * a4;',
+      '  return h;',
+      '}',
+      'void main(){',
+      ' vUv = uv;',
+      ' vec3 p = position;',
+      ' float sh = smoothstep(-7.0, 9.0, p.x);',            // 近岸浪高衰减,与海面一致
+      ' float w = uv.y * waveH(p.xz) * mix(0.30, 1.0, sh);',
+      ' float bed = aBed;',
+      ' float shore = smoothstep(-0.55, -0.05, bed);',      // 岸线一带与海面同样压到滩面之下
+      ' p.y = mix(p.y + w, min(p.y + w, bed - 0.08), shore);',
+      ' vec4 wp = modelMatrix * vec4(p, 1.0); vW = wp.xyz;',
+      ' gl_Position = projectionMatrix * viewMatrix * wp;',
+      '}'
+    ].join('\n'),
     fragmentShader: [
       'varying vec2 vUv; varying vec3 vW; uniform vec3 uShallow; uniform vec3 uDeep; uniform float uTime;',
       'void main(){',
@@ -601,11 +694,13 @@ function waterWall(pts, topFn) {
 function makeSkirt() {
   const positions = [], colors = [], indices = [];
   const perim = [];
-  for (let x = 65; x >= -45; x -= 1.6) perim.push([x, 25]);
-  for (let z = 25; z >= -25; z -= 1.6) perim.push([-45, z]);
-  for (let x = -45; x <= 65; x += 1.6) perim.push([x, -25]);
-  for (let z = -25; z <= 25; z += 1.6) perim.push([65, z]);
-  perim.push([65, 25]);
+  // 外扩 8cm + 0.5 细采样:与地形边缘(z=±25 等共面)错开,消除共面闪面锯齿
+  const E = 0.08;
+  for (let x = 65 + E; x >= -45 - E; x -= 0.5) perim.push([x, 25 + E]);
+  for (let z = 25 + E; z >= -25 - E; z -= 0.5) perim.push([-45 - E, z]);
+  for (let x = -45 - E; x <= 65 + E; x += 0.5) perim.push([x, -25 - E]);
+  for (let z = -25 - E; z <= 25 + E; z += 0.5) perim.push([65 + E, z]);
+  perim.push([65 + E, 25 + E]);
   const tmp = new T3.Color();
   for (let i = 0; i < perim.length; i++) {
     const x = perim[i][0], z = perim[i][1];
@@ -618,7 +713,12 @@ function makeSkirt() {
       const d = yTop - y;
       let c;
       if (isTop) {
-        c = terrainColor(yTop, 0.25, x, z);
+        // 断面顶部:陆上段用与陆地断面一致的橄榄色(不用沙滩浅色),水下段保持海床配色
+        if (yTop > -1.2) {
+          c = C_GRASS_D.clone();
+        } else {
+          c = C_WET.clone().lerp(C_BED, smoothstep(-1.2, -4.5, yTop)).lerp(C_DEEPBED, smoothstep(-9, -26, yTop));
+        }
       } else {
         c = C_ROCK.clone().lerp(C_DEEPROCK, smoothstep(2, 28, d));
       }
@@ -677,11 +777,11 @@ function makeVegetation() {
   const trunkG = new T3.CylinderGeometry(0.16, 0.24, 1.2, 6);
   trunkG.translate(0, 0.6, 0);
   const spots = [];
-  for (let i = 0; i < 900 && spots.length < 190; i++) {
+  for (let i = 0; i < 900 && spots.length < 95; i++) {
     const x = -44 + Math.random() * 42;
     const z = -24 + Math.random() * 48;
     const h = terrainH(x, z);
-    if (h < 1.1 || h > 20) continue;
+    if (h < 1.1 || h > 26) continue;
     const dx = (terrainH(x + 1.5, z) - terrainH(x - 1.5, z)) / 3;
     const dz = (terrainH(x, z + 1.5) - terrainH(x, z - 1.5)) / 3;
     if (Math.sqrt(dx * dx + dz * dz) > 0.62) continue;
@@ -727,7 +827,7 @@ function makeThermocline(mode) {
   };
   for (let i = 0; i <= N; i++) {
     const u = i / N;
-    const x = 3 + u * 66;
+    const x = 3 + u * 62;
     const off = offAt(u);
     const wob = 0.45 * Math.sin(u * 7.0);
     positions.push(x, off + wob - 0.45, Z);
@@ -758,7 +858,7 @@ function buildWorld(mode, hemi) {
   // 同样的沿岸风,南半球要吹向相反方向才能得到同样的离岸/向岸输送
   const windZ = (up ? 1 : -1) * (hemi === 'N' ? 1 : -1);
   const scene = new T3.Scene();
-  scene.fog = new T3.Fog(C(0xc3d9e6).getHex(), 150, 430);
+  scene.fog = new T3.Fog(C(0xeef4f9).getHex(), 150, 430);   // 雾色贴白底
   scene.add(makeSky());
 
   // 光照
@@ -783,9 +883,10 @@ function buildWorld(mode, hemi) {
   const sea = makeSeaSurface();
   scene.add(sea.mesh);
   // 水体壁
-  const wf = []; for (let x = -10; x <= 70; x += 1.6) wf.push([x, 25]);   // 前壁
-  const wb = []; for (let x = -10; x <= 70; x += 1.6) wb.push([x, -25]);  // 后壁
-  const wr = []; for (let z = -25; z <= 25; z += 1.6) wr.push([70, z]);   // 右(深海)壁
+  // 采样间距 0.5 与海面网格一致 → 壁顶与海面边缘逐点对齐,不留缝隙
+  const wf = []; for (let x = -10; x <= 65; x += 0.5) wf.push([x, 25]);   // 前壁(与地形边缘对齐 x=65)
+  const wb = []; for (let x = -10; x <= 65; x += 0.5) wb.push([x, -25]);  // 后壁
+  const wr = []; for (let z = -25; z <= 25; z += 0.5) wr.push([65, z]);   // 右(深海)壁
   const walls = [waterWall(wf), waterWall(wb), waterWall(wr)];
   walls.forEach(function (w) { scene.add(w); });
 
@@ -813,14 +914,14 @@ function buildWorld(mode, hemi) {
     scene.add(st.group); streams.push(st);
   }
 
-  // --- 2. 表层埃克曼输运(橙色) ---
-  for (let i = 0; i < 5; i++) {
-    const zc = -16 + i * 8;
+  // --- 2. 表层埃克曼输运(橙色,平面宽箭头,仅中间一行) ---
+  {
+    const zc = 0;
     const curve = up
-      ? CR([V(2, 1.4, zc), V(20, 1.6, zc + 1), V(40, 1.3, zc), V(60, 1.5, zc - 1)])
-      : CR([V(60, 1.5, zc), V(40, 1.3, zc + 1), V(20, 1.6, zc), V(2, 1.4, zc - 1)]);
+      ? CR([V(2, 1.4, zc), V(20, 1.6, zc), V(40, 1.3, zc), V(60, 1.5, zc)])
+      : CR([V(60, 1.5, zc), V(40, 1.3, zc), V(20, 1.6, zc), V(2, 1.4, zc)]);
     const st = makeStream({
-      color: C(0xffb300), arrowLen: 7.2, radius: 0.52, count: 4, dur: 7.0, curve: curve, opacity: 0.96
+      color: C(0xffb300), arrowLen: 8.5, width: 3.6, flat: true, count: 4, dur: 7.0, curve: curve, opacity: 0.96
     });
     scene.add(st.group); streams.push(st);
   }
@@ -900,25 +1001,25 @@ function buildWorld(mode, hemi) {
   if (up) {
     L('① 沿岸风(吹向' + (windZ > 0 ? '北' : '南') + ')', 16, 11.2, 0, { fg: '#a01c14', bg: 'rgba(255,255,255,.94)' });
     L(hemi === 'N' ? '北半球:表层水偏风向右侧 90°' : '南半球:表层水偏风向左侧 90°', 36, 10.2, -22, { h: 1.45, fg: '#8a5300' });
-    L('② 埃克曼输运:表层水离岸', 34, 3.8, -12, { fg: '#8a5300' });
+    L('② 埃克曼输运:表层水离岸', 30, 4.0, -5, { fg: '#8a5300' });
     L('③ 深层冷水上升 → 到海面转向外海', 11.5, -6.0, 26.5, { fg: '#01579b' });
     L('④ 浮游植物大量繁殖 → 形成渔场', 18, 3.2, 25.5, { fg: '#33691e' });
     L('温跃层(近岸抬升)', 50, -11.9, 26.5, { h: 1.5, fg: '#01579b' });
     L('营养盐上涌', 10.5, -9.4, 26.5, { h: 1.5, fg: '#8d6e00' });
     L('深层补偿流', 44, -9.8, 26.5, { h: 1.5, fg: '#0d47a1' });
     L('海岸线', 0, 2.0, -27.5, { h: 1.5 });
-    L('陆地', -26, 4.6, -4, { h: 1.7 });
+    L('陆地', -26, 12.5, -4, { h: 1.7 });
     L('开阔海洋', 62, -17, 26.5, { h: 1.5, fg: '#014f70' });
   } else {
     L('① 沿岸风(吹向' + (windZ > 0 ? '北' : '南') + ')', 16, 11.2, 0, { fg: '#a01c14', bg: 'rgba(255,255,255,.94)' });
     L(hemi === 'N' ? '北半球:表层水偏风向右侧 90°' : '南半球:表层水偏风向左侧 90°', 36, 10.2, -22, { h: 1.45, fg: '#8a5300' });
-    L('② 埃克曼输运:表层水向岸', 34, 3.8, -12, { fg: '#8a5300' });
+    L('② 埃克曼输运:表层水向岸', 30, 4.0, -5, { fg: '#8a5300' });
     L('③ 表层水在近岸下沉', 11.5, -6.0, 26.5, { fg: '#01579b' });
     L('④ 营养盐难以补充 → 生产力低', 20, 3.2, 25.5, { fg: '#37474f' });
     L('温跃层(近岸下倾)', 50, -3.5, 26.5, { h: 1.5, fg: '#01579b' });
     L('下沉流向深海回流', 42, -9.8, 26.5, { h: 1.5, fg: '#0d47a1' });
     L('海岸线', 0, 2.0, -27.5, { h: 1.5 });
-    L('陆地', -26, 4.6, -4, { h: 1.7 });
+    L('陆地', -26, 12.5, -4, { h: 1.7 });
     L('开阔海洋', 62, -17, 26.5, { h: 1.5, fg: '#014f70' });
   }
   scene.add(labels);
@@ -1107,12 +1208,6 @@ document.querySelectorAll('[data-preset]').forEach(function (b) {
     views.forEach(function (v) { v.orbit.set(p.az, p.el, p.d, p.target); });
   });
 });
-const btnSpin = document.getElementById('btnSpin');
-btnSpin.addEventListener('click', function () {
-  const on = !btnSpin.classList.contains('on');
-  if (on) btnSpin.classList.add('on'); else btnSpin.classList.remove('on');
-  views.forEach(function (v) { v.orbit.auto = on; });
-});
 document.getElementById('btnReset').addEventListener('click', function () {
   const p = PRESETS.default;
   views.forEach(function (v) { v.orbit.set(p.az, p.el, p.d, p.target); });
@@ -1162,6 +1257,14 @@ function updateBadges() {
   const b = document.querySelector('#cardDown .badge span');
   if (a) a.textContent = (hemi === 'N' ? '北半球 · ' : '南半球 · ') + '风沿岸吹向' + upWind + ' → 上升';
   if (b) b.textContent = (hemi === 'N' ? '北半球 · ' : '南半球 · ') + '风沿岸吹向' + downWind + ' → 下沉';
+  /* 信息栏步骤①②随半球同步 */
+  const ek = hemi === 'N' ? '偏向风向右侧 90°' : '偏向风向左侧 90°';
+  const eU = document.getElementById('ekmanUp'), eD = document.getElementById('ekmanDown');
+  if (eU) eU.textContent = ek;
+  if (eD) eD.textContent = ek;
+  const wU = document.getElementById('windUp'), wD = document.getElementById('windDown');
+  if (wU) wU.textContent = '平行于海岸吹(吹向' + upWind + ')';
+  if (wD) wD.textContent = '方向相反(吹向' + downWind + ')';
 }
 document.querySelectorAll('[data-hemi]').forEach(function (b) {
   b.addEventListener('click', function () {
@@ -1211,6 +1314,19 @@ document.querySelectorAll('[data-v]').forEach(function (b) {
   if (p) {
     const pp = PRESETS[p];
     views.forEach(function (v) { v.orbit.set(pp.az, pp.el, pp.d, pp.target, true); });
+  }
+  /* 调试:可用 ?az=0.9&el=0.25&d=55&tx=0&tz=0 直接指定相机 */
+  const qa = parseFloat((location.search.match(/az=([-\d.]+)/) || [])[1]);
+  const qe = parseFloat((location.search.match(/el=([-\d.]+)/) || [])[1]);
+  const qd = parseFloat((location.search.match(/d=([-\d.]+)/) || [])[1]);
+  const qtx = parseFloat((location.search.match(/tx=([-\d.]+)/) || [])[1]);
+  const qtz = parseFloat((location.search.match(/tz=([-\d.]+)/) || [])[1]);
+  if (!isNaN(qa) || !isNaN(qe) || !isNaN(qd)) {
+    const base = PRESETS.default;
+    const tgt = new T3.Vector3(isNaN(qtx) ? base.target.x : qtx, base.target.y, isNaN(qtz) ? base.target.z : qtz);
+    views.forEach(function (v) {
+      v.orbit.set(isNaN(qa) ? base.az : qa, isNaN(qe) ? base.el : qe, isNaN(qd) ? base.d : qd, tgt, true);
+    });
   }
 })();
 
