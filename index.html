@@ -165,7 +165,7 @@
       </div>
       <div class="pgroup">
         <div class="ptitle">图层</div>
-        <button id="btnLabel" class="on">标注</button>
+        <button id="btnLabel">标注</button>
         <button id="btnPart" class="on">颗粒</button>
         <button id="btnLink" class="on">视角同步</button>
       </div>
@@ -286,7 +286,7 @@ function smoothstep(e0, e1, x) { const t = clamp((x - e0) / (e1 - e0), 0, 1); re
 function C(hex) { return new T3.Color(hex).convertSRGBToLinear(); }
 
 // ---------------- 地形高度场 ----------------
-const ORIGIN_X = 10;              // 地形面中心(世界 x),范围 x∈[-45,65]
+const ORIGIN_X = 10;              // 地形面中心(世界 x),范围 x∈[-45,65]、z∈[-40,40]
 function fbm(x, z) {
   let s = 0;
   s += Math.sin(x * 0.11 + 0.5) * Math.cos(z * 0.12) * 1.9;
@@ -542,7 +542,7 @@ function makeSky() {
 
 // ---------------- 海面 ----------------
 function makeSeaSurface() {
-  const geo = new T3.PlaneGeometry(75, 50, 150, 100);
+  const geo = new T3.PlaneGeometry(75, 80, 150, 160);
   geo.rotateX(-Math.PI / 2);
   /* 逐顶点记录海底/滩面高度:岸线附近把水面压到地形之下,消除穿插重影 */
   const pos0 = geo.attributes.position;
@@ -696,11 +696,11 @@ function makeSkirt() {
   const perim = [];
   // 外扩 8cm + 0.5 细采样:与地形边缘(z=±25 等共面)错开,消除共面闪面锯齿
   const E = 0.08;
-  for (let x = 65 + E; x >= -45 - E; x -= 0.5) perim.push([x, 25 + E]);
-  for (let z = 25 + E; z >= -25 - E; z -= 0.5) perim.push([-45 - E, z]);
-  for (let x = -45 - E; x <= 65 + E; x += 0.5) perim.push([x, -25 - E]);
-  for (let z = -25 - E; z <= 25 + E; z += 0.5) perim.push([65 + E, z]);
-  perim.push([65 + E, 25 + E]);
+  for (let x = 65 + E; x >= -45 - E; x -= 0.5) perim.push([x, 40 + E]);
+  for (let z = 40 + E; z >= -40 - E; z -= 0.5) perim.push([-45 - E, z]);
+  for (let x = -45 - E; x <= 65 + E; x += 0.5) perim.push([x, -40 - E]);
+  for (let z = -40 - E; z <= 40 + E; z += 0.5) perim.push([65 + E, z]);
+  perim.push([65 + E, 40 + E]);
   const tmp = new T3.Color();
   for (let i = 0; i < perim.length; i++) {
     const x = perim[i][0], z = perim[i][1];
@@ -744,7 +744,7 @@ function makeSkirt() {
 
 // ---------------- 地形 ----------------
 function makeTerrain() {
-  const geo = new T3.PlaneGeometry(110, 50, 190, 96);
+  const geo = new T3.PlaneGeometry(110, 80, 190, 160);
   geo.rotateX(-Math.PI / 2);
   const pos = geo.attributes.position;
   for (let i = 0; i < pos.count; i++) {
@@ -777,9 +777,9 @@ function makeVegetation() {
   const trunkG = new T3.CylinderGeometry(0.16, 0.24, 1.2, 6);
   trunkG.translate(0, 0.6, 0);
   const spots = [];
-  for (let i = 0; i < 900 && spots.length < 95; i++) {
+  for (let i = 0; i < 1100 && spots.length < 115; i++) {
     const x = -44 + Math.random() * 42;
-    const z = -24 + Math.random() * 48;
+    const z = -38 + Math.random() * 76;
     const h = terrainH(x, z);
     if (h < 1.1 || h > 26) continue;
     const dx = (terrainH(x + 1.5, z) - terrainH(x - 1.5, z)) / 3;
@@ -818,7 +818,7 @@ function makeVegetation() {
 function makeThermocline(mode) {
   const N = 90;
   const positions = [], uvs = [], indices = [];
-  const Z = 22.5;
+  const Z = 37.5;
   const offAt = function (u) {
     if (mode === 'up') return -3.4 - u * 10.0;              // 近岸抬升 → 远海加深
     if (u < 0.15) return -4.2 + (u / 0.15) * (-5.4);         // 近岸快速下倾
@@ -869,7 +869,7 @@ function buildWorld(mode, hemi) {
   sun.castShadow = true;
   sun.shadow.mapSize.set(1024, 1024);
   const sc = sun.shadow.camera;
-  sc.left = -70; sc.right = 90; sc.top = 70; sc.bottom = -70; sc.near = 10; sc.far = 320;
+  sc.left = -70; sc.right = 90; sc.top = 95; sc.bottom = -95; sc.near = 10; sc.far = 320;
   sun.shadow.bias = -0.0012;
   scene.add(sun);
   scene.add(new T3.AmbientLight(C(0xdfeaf2), 0.22));
@@ -884,9 +884,9 @@ function buildWorld(mode, hemi) {
   scene.add(sea.mesh);
   // 水体壁
   // 采样间距 0.5 与海面网格一致 → 壁顶与海面边缘逐点对齐,不留缝隙
-  const wf = []; for (let x = -10; x <= 65; x += 0.5) wf.push([x, 25]);   // 前壁(与地形边缘对齐 x=65)
-  const wb = []; for (let x = -10; x <= 65; x += 0.5) wb.push([x, -25]);  // 后壁
-  const wr = []; for (let z = -25; z <= 25; z += 0.5) wr.push([65, z]);   // 右(深海)壁
+  const wf = []; for (let x = -10; x <= 65; x += 0.5) wf.push([x, 40]);   // 前壁(与地形边缘对齐 x=65, z=±40)
+  const wb = []; for (let x = -10; x <= 65; x += 0.5) wb.push([x, -40]);  // 后壁
+  const wr = []; for (let z = -40; z <= 40; z += 0.5) wr.push([65, z]);   // 右(深海)壁
   const walls = [waterWall(wf), waterWall(wb), waterWall(wr)];
   walls.forEach(function (w) { scene.add(w); });
 
@@ -946,7 +946,7 @@ function buildWorld(mode, hemi) {
     return pts;
   };
   for (let i = 0; i < 3; i++) {
-    const zc = -9 + i * 10.5;
+    const zc = -13 + i * 13;
     const pts = pathPts(zc);
     const curve = up ? CR(pts) : CR(pts.slice().reverse());
     const st = makeStream({ color: vColor, arrowLen: 5.0, radius: 0.68, count: 7, dur: 6.2, curve: curve, opacity: 1 });
@@ -955,7 +955,7 @@ function buildWorld(mode, hemi) {
 
   // --- 4. 断面内表层流(青色) ---
   for (let i = 0; i < 2; i++) {
-    const zc = 15 + i * 6;
+    const zc = 24 + i * 8;
     const curve = up
       ? CR([V(8, -1.8, zc), V(25, -2.1, zc), V(42, -1.9, zc), V(58, -2.2, zc)])
       : CR([V(58, -2.2, zc), V(42, -1.9, zc), V(25, -2.1, zc), V(8, -1.8, zc)]);
@@ -965,7 +965,7 @@ function buildWorld(mode, hemi) {
 
   // --- 5. 深层补偿流(蓝色,贴着海底流动) ---
   for (let i = 0; i < 3; i++) {
-    const zc = -11 + i * 11;
+    const zc = -15 + i * 15;
     const curve = up
       ? CR([at(56, zc, 3.0), at(40, zc, 2.6), at(26, zc, 2.4), at(16, zc, 2.2)])
       : CR([at(16, zc, 2.2), at(26, zc, 2.4), at(40, zc, 2.6), at(56, zc, 3.0)]);
@@ -976,7 +976,7 @@ function buildWorld(mode, hemi) {
   // --- 6. 颗粒(营养盐 / 下沉水团) ---
   if (up) {
     for (let i = 0; i < 3; i++) {
-      const zc = -9 + i * 9;
+      const zc = -13 + i * 13;
       const ps = makeParticles({ color: C(0xffd54f), radius: 0.34, count: 7, dur: 10.0, curve: CR(pathPts(zc, 55)) });
       scene.add(ps.group); particles.push(ps);
     }
@@ -987,7 +987,7 @@ function buildWorld(mode, hemi) {
     scene.add(pl.group); particles.push(pl);
   } else {
     for (let i = 0; i < 3; i++) {
-      const zc = -9 + i * 9;
+      const zc = -13 + i * 13;
       const ps = makeParticles({ color: C(0xffc9c9), radius: 0.34, count: 7, dur: 10.0, curve: CR(pathPts(zc, 55).slice().reverse()) });
       scene.add(ps.group); particles.push(ps);
     }
@@ -1000,27 +1000,27 @@ function buildWorld(mode, hemi) {
   const L = function (txt, x, y, z, o) { const s = makeLabel(txt, o); s.position.set(x, y, z); labels.add(s); return s; };
   if (up) {
     L('① 沿岸风(吹向' + (windZ > 0 ? '北' : '南') + ')', 16, 11.2, 0, { fg: '#a01c14', bg: 'rgba(255,255,255,.94)' });
-    L(hemi === 'N' ? '北半球:表层水偏风向右侧 90°' : '南半球:表层水偏风向左侧 90°', 36, 10.2, -22, { h: 1.45, fg: '#8a5300' });
+    L(hemi === 'N' ? '北半球:表层水偏风向右侧 90°' : '南半球:表层水偏风向左侧 90°', 36, 10.2, -27, { h: 1.45, fg: '#8a5300' });
     L('② 埃克曼输运:表层水离岸', 30, 4.0, -5, { fg: '#8a5300' });
-    L('③ 深层冷水上升 → 到海面转向外海', 11.5, -6.0, 26.5, { fg: '#01579b' });
-    L('④ 浮游植物大量繁殖 → 形成渔场', 18, 3.2, 25.5, { fg: '#33691e' });
-    L('温跃层(近岸抬升)', 50, -11.9, 26.5, { h: 1.5, fg: '#01579b' });
-    L('营养盐上涌', 10.5, -9.4, 26.5, { h: 1.5, fg: '#8d6e00' });
-    L('深层补偿流', 44, -9.8, 26.5, { h: 1.5, fg: '#0d47a1' });
-    L('海岸线', 0, 2.0, -27.5, { h: 1.5 });
-    L('陆地', -26, 12.5, -4, { h: 1.7 });
-    L('开阔海洋', 62, -17, 26.5, { h: 1.5, fg: '#014f70' });
+    L('③ 深层冷水上升 → 到海面转向外海', 11.5, -6.0, 41.5, { fg: '#01579b' });
+    L('④ 浮游植物大量繁殖 → 形成渔场', 18, 3.2, 41.5, { fg: '#33691e' });
+    L('温跃层(近岸抬升)', 50, -11.9, 41.5, { h: 1.5, fg: '#01579b' });
+    L('营养盐上涌', 10.5, -9.4, 41.5, { h: 1.5, fg: '#8d6e00' });
+    L('深层补偿流', 44, -9.8, 41.5, { h: 1.5, fg: '#0d47a1' });
+    L('海岸线', 0, 2.0, -40.5, { h: 1.5 });
+    L('陆地', -28, 12.5, 0, { h: 1.7 });
+    L('开阔海洋', 62, -17, 41.5, { h: 1.5, fg: '#014f70' });
   } else {
     L('① 沿岸风(吹向' + (windZ > 0 ? '北' : '南') + ')', 16, 11.2, 0, { fg: '#a01c14', bg: 'rgba(255,255,255,.94)' });
-    L(hemi === 'N' ? '北半球:表层水偏风向右侧 90°' : '南半球:表层水偏风向左侧 90°', 36, 10.2, -22, { h: 1.45, fg: '#8a5300' });
+    L(hemi === 'N' ? '北半球:表层水偏风向右侧 90°' : '南半球:表层水偏风向左侧 90°', 36, 10.2, -27, { h: 1.45, fg: '#8a5300' });
     L('② 埃克曼输运:表层水向岸', 30, 4.0, -5, { fg: '#8a5300' });
-    L('③ 表层水在近岸下沉', 11.5, -6.0, 26.5, { fg: '#01579b' });
-    L('④ 营养盐难以补充 → 生产力低', 20, 3.2, 25.5, { fg: '#37474f' });
-    L('温跃层(近岸下倾)', 50, -3.5, 26.5, { h: 1.5, fg: '#01579b' });
-    L('下沉流向深海回流', 42, -9.8, 26.5, { h: 1.5, fg: '#0d47a1' });
-    L('海岸线', 0, 2.0, -27.5, { h: 1.5 });
-    L('陆地', -26, 12.5, -4, { h: 1.7 });
-    L('开阔海洋', 62, -17, 26.5, { h: 1.5, fg: '#014f70' });
+    L('③ 表层水在近岸下沉', 11.5, -6.0, 41.5, { fg: '#01579b' });
+    L('④ 营养盐难以补充 → 生产力低', 20, 3.2, 41.5, { fg: '#37474f' });
+    L('温跃层(近岸下倾)', 50, -3.5, 41.5, { h: 1.5, fg: '#01579b' });
+    L('下沉流向深海回流', 42, -9.8, 41.5, { h: 1.5, fg: '#0d47a1' });
+    L('海岸线', 0, 2.0, -40.5, { h: 1.5 });
+    L('陆地', -28, 12.5, 0, { h: 1.7 });
+    L('开阔海洋', 62, -17, 41.5, { h: 1.5, fg: '#014f70' });
   }
   scene.add(labels);
 
@@ -1131,7 +1131,7 @@ function createView(id, canvas, mode) {
   renderer.shadowMap.type = T3.PCFSoftShadowMap;
   const camera = new T3.PerspectiveCamera(42, 1, 0.5, 2000);
   const world = buildWorld(mode, hemi);
-  const orbit = new Orbit(camera, canvas, { az: 0.44, el: 0.34, d: 95, target: new T3.Vector3(9, -4, 2) });
+  const orbit = new Orbit(camera, canvas, { az: 0.44, el: 0.34, d: 116, target: new T3.Vector3(9, -4, 0) });
   const v = { id: id, renderer: renderer, camera: camera, world: world, orbit: orbit, canvas: canvas, visible: true };
   resizeView(v);
   views.push(v);
@@ -1147,11 +1147,13 @@ function resizeView(v) {
   }
 }
 
+let labelOn = false, partOn = true;   // 标注默认关闭(需在创建视图前声明)
 const vUp = createView('up', document.getElementById('cvUp'), 'up');
 const vDown = createView('down', document.getElementById('cvDown'), 'down');
 vDown.visible = false;   // 默认只显示上升流,由顶部按键切换
 views.forEach(function (v) {
   v.compass = v.canvas.parentElement.querySelector('.compass .nd') || null;
+  v.world.setLabels(labelOn);   // 标注默认关闭
 });
 /* 屏幕罗盘:让红色指针始终指向画面上的"真北"(世界 -Z),随相机旋转实时更新 */
 const _cpA = new T3.Vector3(), _cpB = new T3.Vector3();
@@ -1180,10 +1182,10 @@ views.forEach(function (v) {
 });
 
 const PRESETS = {
-  default: { az: 0.44, el: 0.34, d: 95, target: new T3.Vector3(9, -4, 2) },
-  top: { az: 0.30, el: 1.12, d: 100, target: new T3.Vector3(8, -2, 0) },
-  front: { az: 0.02, el: 0.14, d: 94, target: new T3.Vector3(10, -5, 4) },
-  along: { az: 1.42, el: 0.28, d: 104, target: new T3.Vector3(6, -5, 0) }
+  default: { az: 0.44, el: 0.34, d: 116, target: new T3.Vector3(9, -4, 0) },
+  top: { az: 0.30, el: 1.12, d: 130, target: new T3.Vector3(8, -2, 0) },
+  front: { az: 0.02, el: 0.14, d: 126, target: new T3.Vector3(10, -5, 0) },
+  along: { az: 1.42, el: 0.28, d: 132, target: new T3.Vector3(6, -5, 0) }
 };
 
 /* ================= UI ================= */
@@ -1212,7 +1214,6 @@ document.getElementById('btnReset').addEventListener('click', function () {
   const p = PRESETS.default;
   views.forEach(function (v) { v.orbit.set(p.az, p.el, p.d, p.target); });
 });
-let labelOn = true, partOn = true;
 const btnLabel = document.getElementById('btnLabel');
 btnLabel.addEventListener('click', function () {
   labelOn = !btnLabel.classList.contains('on');
